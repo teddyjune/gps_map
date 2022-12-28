@@ -39,12 +39,6 @@ class GpsMapAppState extends State<GpsMapApp> {
     zoom: 14.4746,
   );
 
-  static const CameraPosition _kLake = CameraPosition(
-      bearing: 192.8334901395799,
-      target: LatLng(37.43296265331129, -122.08832357078792),
-      tilt: 59.440717697143555,
-      zoom: 19.151926040649414);
-
   @override
   void initState() {
     super.initState();
@@ -67,16 +61,20 @@ class GpsMapAppState extends State<GpsMapApp> {
         },
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: _goToTheLake,
+        onPressed: _goToCurrent,
         label: const Text('To the lake!'),
         icon: const Icon(Icons.directions_boat),
       ),
     );
   }
 
-  Future<void> _goToTheLake() async {
+  Future<void> _goToCurrent() async {
     final GoogleMapController controller = await _controller.future;
-    controller.animateCamera(CameraUpdate.newCameraPosition(_kLake));
+    //현재 위치 가져오는 코드
+    final position = await Geolocator.getCurrentPosition();
+    final cameraPosition = CameraPosition(
+        target: LatLng(position.longitude, position.latitude), zoom: 10);
+    controller.animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
   }
 
   Future<Position> _determinePosition() async {
